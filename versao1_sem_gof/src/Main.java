@@ -1,13 +1,3 @@
-/**
- * VERSÃO 1 — SEM PADRÃO GoF
- *
- * Demonstração do problema: código duplicado nas três classes de relatório.
- *
- * Para compilar e executar:
- *   cd versao1_sem_gof/src
- *   javac *.java
- *   java Main
- */
 public class Main {
 
     public static void main(String[] args) {
@@ -22,7 +12,6 @@ public class Main {
         System.out.println("#  Problema: código duplicado nas classes  #");
         System.out.println("############################################\n");
 
-        // Cada classe tem seu próprio fluxo — código duplicado!
         RelatorioPDF pdf = new RelatorioPDF("Relatório de Vendas Q1", dados);
         pdf.gerar();
 

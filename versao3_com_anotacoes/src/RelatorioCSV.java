@@ -1,11 +1,6 @@
 import anotacoes.PassoRelatorio;
 import anotacoes.RelatorioConfig;
 
-/**
- * VERSÃO 3 — COM REFLEXÃO E ANOTAÇÕES
- *
- * Relatório CSV com anotações @PassoRelatorio nos métodos variáveis.
- */
 @RelatorioConfig(
     nome = "Relatório CSV",
     extensao = "csv",

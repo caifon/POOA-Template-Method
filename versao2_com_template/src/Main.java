@@ -1,11 +1,3 @@
-/**
- * VERSÃO 2 — COM PADRÃO TEMPLATE METHOD
- *
- * Para compilar e executar:
- *   cd versao2_com_template/src
- *   javac *.java
- *   java Main
- */
 public class Main {
 
     public static void main(String[] args) {
@@ -20,7 +12,6 @@ public class Main {
         System.out.println("#  Fluxo único na superclasse abstrata     #");
         System.out.println("############################################\n");
 
-        // Polimorfismo: a referência é do tipo abstrato RelatorioGerador
         RelatorioGerador[] relatorios = {
             new RelatorioPDF("Relatório de Vendas Q1", dados),
             new RelatorioHTML("Relatório de Vendas Q1", dados),
@@ -28,7 +19,7 @@ public class Main {
         };
 
         for (RelatorioGerador relatorio : relatorios) {
-            relatorio.gerarRelatorio(); // sempre chama o template
+            relatorio.gerarRelatorio();
         }
 
         System.out.println("VANTAGEM DO TEMPLATE METHOD:");

@@ -1,11 +1,6 @@
 import anotacoes.PassoRelatorio;
 import anotacoes.RelatorioConfig;
 
-/**
- * VERSÃO 3 — COM REFLEXÃO E ANOTAÇÕES
- *
- * Relatório HTML com anotações @PassoRelatorio nos métodos variáveis.
- */
 @RelatorioConfig(
     nome = "Relatório HTML",
     extensao = "html",
@@ -43,9 +38,6 @@ public class RelatorioHTML extends RelatorioGerador {
         System.out.println("<footer><p>Relatório gerado automaticamente.</p></footer>");
         System.out.println("</body></html>");
     }
-
-    // incluirMarcaDagua() não é sobrescrito → o ExecutorRelatorio
-    // detecta que a versão herdada não tem @PassoRelatorio e a ignora
 
     @Override
     public String getFormato() {

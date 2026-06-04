@@ -1,9 +1,3 @@
-/**
- * VERSÃO 2 — COM PADRÃO TEMPLATE METHOD
- *
- * Relatório em formato HTML.
- * Não há duplicação de código — o fluxo está na superclasse.
- */
 public class RelatorioHTML extends RelatorioGerador {
 
     public RelatorioHTML(String titulo, String[] dados) {
@@ -32,8 +26,6 @@ public class RelatorioHTML extends RelatorioGerador {
         System.out.println("<footer><p>Relatório gerado automaticamente.</p></footer>");
         System.out.println("</body></html>");
     }
-
-    // Não sobrescreve incluirMarcaDagua() — usa o comportamento padrão (sem marca)
 
     @Override
     protected String getFormato() {

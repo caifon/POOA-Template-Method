@@ -1,10 +1,3 @@
-/**
- * VERSÃO 2 — COM PADRÃO TEMPLATE METHOD
- *
- * Relatório em formato PDF.
- * Implementa apenas os passos que variam por formato.
- * O fluxo geral está garantido pela superclasse RelatorioGerador.
- */
 public class RelatorioPDF extends RelatorioGerador {
 
     public RelatorioPDF(String titulo, String[] dados) {
@@ -35,9 +28,6 @@ public class RelatorioPDF extends RelatorioGerador {
         System.out.println("----------------------------------------");
     }
 
-    /**
-     * Sobrescreve o hook — PDFs confidenciais recebem marca d'água.
-     */
     @Override
     protected void incluirMarcaDagua() {
         System.out.println("[PDF] Adicionando marca d'água: CONFIDENCIAL");

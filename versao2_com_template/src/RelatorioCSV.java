@@ -1,9 +1,3 @@
-/**
- * VERSÃO 2 — COM PADRÃO TEMPLATE METHOD
- *
- * Relatório em formato CSV.
- * Apenas os métodos que realmente diferem são implementados aqui.
- */
 public class RelatorioCSV extends RelatorioGerador {
 
     public RelatorioCSV(String titulo, String[] dados) {

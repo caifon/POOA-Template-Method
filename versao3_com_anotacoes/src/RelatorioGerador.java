@@ -1,16 +1,5 @@
 import anotacoes.PassoRelatorio;
 
-/**
- * VERSÃO 3 — COM REFLEXÃO E ANOTAÇÕES
- *
- * Classe abstrata base para geradores de relatório.
- *
- * Diferença em relação à Versão 2:
- * - Os métodos de passo são anotados com @PassoRelatorio
- * - O ExecutorRelatorio usa REFLEXÃO para descobrir e invocar esses métodos
- * - Não há mais um método gerarRelatorio() chamando os passos explicitamente
- * - Isso reduz o acoplamento: o executor não conhece os nomes concretos dos métodos
- */
 public abstract class RelatorioGerador {
 
     protected String titulo;
@@ -20,10 +9,6 @@ public abstract class RelatorioGerador {
         this.titulo = titulo;
         this.dados = dados;
     }
-
-    // -------------------------------------------------------
-    // Passos FIXOS — implementados aqui com @PassoRelatorio
-    // -------------------------------------------------------
 
     @PassoRelatorio(ordem = 1, descricao = "Coleta de dados do repositório")
     public void coletarDados() {
@@ -42,27 +27,14 @@ public abstract class RelatorioGerador {
                 + titulo + "." + getFormato().toLowerCase());
     }
 
-    // -------------------------------------------------------
-    // Passos VARIÁVEIS — subclasses anotam com @PassoRelatorio
-    // -------------------------------------------------------
-
     public abstract void formatarCabecalho();
 
     public abstract void formatarCorpo();
 
     public abstract void formatarRodape();
 
-    /**
-     * Hook method — não obrigatório.
-     * Subclasses que quiserem adicionar marca d'água sobrescrevem e anotam.
-     */
     public void incluirMarcaDagua() {
-        // padrão: sem efeito
     }
-
-    // -------------------------------------------------------
-    // Auxiliar
-    // -------------------------------------------------------
 
     public abstract String getFormato();
 

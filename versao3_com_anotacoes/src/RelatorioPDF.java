@@ -1,15 +1,6 @@
 import anotacoes.PassoRelatorio;
 import anotacoes.RelatorioConfig;
 
-/**
- * VERSÃO 3 — COM REFLEXÃO E ANOTAÇÕES
- *
- * Relatório PDF anotado com @RelatorioConfig (metadados da classe)
- * e com cada passo anotado com @PassoRelatorio (ordem e descrição).
- *
- * O ExecutorRelatorio descobre esses métodos via reflexão —
- * não precisa conhecer esta classe em tempo de compilação.
- */
 @RelatorioConfig(
     nome = "Relatório PDF",
     extensao = "pdf",

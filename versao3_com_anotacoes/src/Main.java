@@ -1,19 +1,3 @@
-/**
- * VERSÃO 3 — COM REFLEXÃO E ANOTAÇÕES
- *
- * Para compilar e executar:
- *
- *   Windows (PowerShell):
- *     cd versao3_com_anotacoes\src
- *     javac -d . anotacoes\PassoRelatorio.java anotacoes\RelatorioConfig.java
- *     javac -d . RelatorioGerador.java RelatorioPDF.java RelatorioHTML.java RelatorioCSV.java ExecutorRelatorio.java Main.java
- *     java Main
- *
- *   Linux/Mac:
- *     cd versao3_com_anotacoes/src
- *     javac -d . anotacoes/*.java *.java
- *     java Main
- */
 public class Main {
 
     public static void main(String[] args) {
@@ -28,7 +12,6 @@ public class Main {
         System.out.println("#  ExecutorRelatorio descobre passos via reflexão #");
         System.out.println("##################################################\n");
 
-        // ExecutorRelatorio é o motor — não conhece PDF, HTML ou CSV
         ExecutorRelatorio executor = new ExecutorRelatorio();
 
         RelatorioGerador[] relatorios = {
