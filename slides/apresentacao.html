@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Template Method — Apresentação | POOA UCSal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --accent: #7c3aed;
+      --accent2: #a78bfa;
+      --accent3: #c4b5fd;
+      --green: #22c55e;
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --blue: #60a5fa;
+      --cyan: #22d3ee;
+      --text: #f1f5f9;
+      --text2: #94a3b8;
+      --border: rgba(255,255,255,0.08);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Slideshow container */
+    .slideshow {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem 4rem;
+      opacity: 0;
+      transform: translateX(60px);
+      transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+      text-align: center;
+    }
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: all;
+    }
+    .slide.prev {
+      opacity: 0;
+      transform: translateX(-60px);
+    }
+
+    /* Slide backgrounds */
+    .slide-cover {
+      background: radial-gradient(ellipse at 20% 50%, rgba(124,58,237,0.25) 0%, transparent 60%),
+                  radial-gradient(ellipse at 80% 20%, rgba(59,130,246,0.15) 0%, transparent 50%),
+                  radial-gradient(ellipse at 60% 90%, rgba(34,197,94,0.08) 0%, transparent 50%),
+                  linear-gradient(135deg, #0a0a0f 0%, #0f0a1e 100%);
+    }
+    .slide-content {
+      background: radial-gradient(ellipse at 10% 20%, rgba(124,58,237,0.1) 0%, transparent 50%),
+                  linear-gradient(180deg, #0a0a0f 0%, #080810 100%);
+      text-align: left;
+      align-items: flex-start;
+    }
+    .slide-problem {
+      background: radial-gradient(ellipse at 80% 20%, rgba(239,68,68,0.15) 0%, transparent 50%),
+                  linear-gradient(180deg, #0a0a0f 0%, #100808 100%);
+      text-align: left;
+      align-items: flex-start;
+    }
+    .slide-solution {
+      background: radial-gradient(ellipse at 20% 80%, rgba(34,197,94,0.12) 0%, transparent 50%),
+                  linear-gradient(180deg, #0a0a0f 0%, #08100a 100%);
+      text-align: left;
+      align-items: flex-start;
+    }
+    .slide-code {
+      background: linear-gradient(180deg, #0a0a0f 0%, #0a0f14 100%);
+      text-align: left;
+      align-items: flex-start;
+    }
+    .slide-annotation {
+      background: radial-gradient(ellipse at 70% 30%, rgba(245,158,11,0.1) 0%, transparent 50%),
+                  linear-gradient(180deg, #0a0a0f 0%, #100f08 100%);
+      text-align: left;
+      align-items: flex-start;
+    }
+    .slide-end {
+      background: radial-gradient(ellipse at 50% 50%, rgba(124,58,237,0.2) 0%, transparent 60%),
+                  linear-gradient(135deg, #0a0a0f 0%, #0f0a1e 100%);
+    }
+
+    /* Decorative grid bg */
+    .slide::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+    }
+
+    /* Slide number badge */
+    .slide-num {
+      position: absolute;
+      top: 1.5rem;
+      right: 2rem;
+      font-size: 0.75rem;
+      color: var(--text2);
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      z-index: 10;
+    }
+
+    /* Cover slide */
+    .cover-eyebrow {
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.3);
+      padding: 0.4rem 1.2rem;
+      border-radius: 2rem;
+      margin-bottom: 2rem;
+    }
+    .cover-title {
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #fff 0%, var(--accent3) 50%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+    }
+    .cover-subtitle {
+      font-size: 1.2rem;
+      color: var(--text2);
+      margin-bottom: 3rem;
+      font-weight: 300;
+    }
+    .cover-team {
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .team-chip {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border);
+      border-radius: 2rem;
+      padding: 0.5rem 1.2rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+    .cover-info {
+      margin-top: 2.5rem;
+      display: flex;
+      gap: 2rem;
+      color: var(--text2);
+      font-size: 0.85rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* Section headings */
+    .slide-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .slide-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(to right, rgba(124,58,237,0.5), transparent);
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+    h2 span { color: var(--accent2); }
+
+    p.lead {
+      font-size: 1rem;
+      color: var(--text2);
+      line-height: 1.7;
+      max-width: 700px;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Cards grid */
+    .cards {
+      display: grid;
+      gap: 1rem;
+      width: 100%;
+      max-width: 900px;
+    }
+    .cards-2 { grid-template-columns: 1fr 1fr; }
+    .cards-3 { grid-template-columns: repeat(3, 1fr); }
+
+    .card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.2rem 1.4rem;
+    }
+    .card-icon { font-size: 1.4rem; margin-bottom: 0.6rem; }
+    .card h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.3rem; }
+    .card p { font-size: 0.8rem; color: var(--text2); line-height: 1.5; }
+    .card.danger { border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.07); }
+    .card.success { border-color: rgba(34,197,94,0.3); background: rgba(34,197,94,0.07); }
+    .card.warning { border-color: rgba(245,158,11,0.3); background: rgba(245,158,11,0.07); }
+    .card.info { border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.07); }
+    .card.purple { border-color: rgba(124,58,237,0.4); background: rgba(124,58,237,0.1); }
+
+    /* Code block */
+    .code-block {
+      background: #0d1117;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 1.2rem 1.4rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.78rem;
+      line-height: 1.7;
+      color: #c9d1d9;
+      width: 100%;
+      max-width: 900px;
+      overflow-x: auto;
+      position: relative;
+    }
+    .code-block .kw { color: #ff7b72; }
+    .code-block .fn { color: #d2a8ff; }
+    .code-block .str { color: #a5d6ff; }
+    .code-block .cm { color: #8b949e; font-style: italic; }
+    .code-block .ann { color: #f0883e; }
+    .code-block .num { color: #79c0ff; }
+    .code-block .type { color: #ffa657; }
+    .code-block .hl { background: rgba(124,58,237,0.15); border-radius: 3px; padding: 1px 3px; }
+    .code-label {
+      position: absolute;
+      top: 0.7rem;
+      right: 0.9rem;
+      font-size: 0.65rem;
+      color: var(--text2);
+      font-family: 'Inter', sans-serif;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* Table */
+    .comp-table {
+      width: 100%;
+      max-width: 900px;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+    .comp-table th {
+      padding: 0.7rem 1rem;
+      background: rgba(255,255,255,0.05);
+      color: var(--text2);
+      font-weight: 600;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+    }
+    .comp-table th:first-child { text-align: left; }
+    .comp-table td {
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      text-align: center;
+      color: var(--text2);
+    }
+    .comp-table td:first-child { text-align: left; color: var(--text); }
+    .comp-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .ok { color: var(--green); }
+    .nok { color: var(--red); }
+    .mid { color: var(--yellow); }
+
+    /* List */
+    .check-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      max-width: 750px;
+    }
+    .check-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: var(--text2);
+    }
+    .check-list li .ico { flex-shrink: 0; font-size: 1rem; margin-top: 1px; }
+    .check-list li strong { color: var(--text); }
+
+    /* Two columns */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      width: 100%;
+      max-width: 950px;
+    }
+
+    /* Highlight box */
+    .highlight-box {
+      background: rgba(124,58,237,0.12);
+      border: 1px solid rgba(124,58,237,0.35);
+      border-radius: 10px;
+      padding: 1rem 1.4rem;
+      font-size: 0.9rem;
+      color: var(--accent3);
+      line-height: 1.6;
+      max-width: 900px;
+      width: 100%;
+    }
+    .highlight-box strong { color: var(--accent2); }
+
+    /* Badge */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.7rem;
+      border-radius: 4px;
+      margin-right: 0.4rem;
+    }
+    .badge-red { background: rgba(239,68,68,0.2); color: var(--red); }
+    .badge-green { background: rgba(34,197,94,0.2); color: var(--green); }
+    .badge-purple { background: rgba(124,58,237,0.2); color: var(--accent2); }
+    .badge-yellow { background: rgba(245,158,11,0.2); color: var(--yellow); }
+
+    /* Navigation */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2.5rem;
+      background: rgba(255,255,255,0.02);
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.4rem;
+      background: rgba(124,58,237,0.15);
+      border: 1px solid rgba(124,58,237,0.35);
+      border-radius: 8px;
+      color: var(--accent2);
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .nav-btn:hover { background: rgba(124,58,237,0.3); border-color: var(--accent2); }
+    .nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .nav-btn:disabled:hover { background: rgba(124,58,237,0.15); border-color: rgba(124,58,237,0.35); }
+
+    /* Progress dots */
+    .progress {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.15);
+      transition: all 0.3s;
+      cursor: pointer;
+    }
+    .dot.active {
+      background: var(--accent2);
+      width: 20px;
+      border-radius: 4px;
+    }
+    .dot:hover { background: rgba(167,139,250,0.5); }
+
+    /* Keyboard hint */
+    .key-hint {
+      font-size: 0.72rem;
+      color: var(--text2);
+    }
+    .kbd {
+      display: inline-block;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 4px;
+      padding: 0.1rem 0.4rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.7rem;
+    }
+
+    /* Animations */
+    .fade-in { animation: fi 0.5s ease both; }
+    @keyframes fi { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+<div class="slideshow">
+
+  <!-- SLIDE 1: Capa -->
+  <div class="slide slide-cover active" id="slide-0">
+    <span class="slide-num">1 / 14</span>
+    <div class="cover-eyebrow">🎓 POOA — Trabalho AVII · UCSal 2026.1</div>
+    <div class="cover-title">Template Method</div>
+    <div class="cover-subtitle">Padrão de Projeto GoF Comportamental</div>
+    <div class="cover-team">
+      <span class="team-chip">👤 Caio Roldão</span>
+      <span class="team-chip">👤 João Mário</span>
+      <span class="team-chip">👤 Juvenal Junior</span>
+    </div>
+    <div class="cover-info">
+      <span>📅 04/06/2026</span>
+      <span>🏛️ Universidade Católica do Salvador</span>
+      <span>☕ Java · Reflexão · Anotações</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Agenda -->
+  <div class="slide slide-content" id="slide-1">
+    <span class="slide-num">2 / 14</span>
+    <div class="slide-label">📋 Roteiro</div>
+    <h2>O que vamos <span>apresentar</span></h2>
+    <div class="cards cards-2" style="max-width:850px">
+      <div class="card purple">
+        <div class="card-icon">🔴</div>
+        <h4>Problema</h4>
+        <p>Sistema de relatórios com código duplicado e alto acoplamento</p>
+      </div>
+      <div class="card purple">
+        <div class="card-icon">❓</div>
+        <h4>Por que a solução ingênua falha</h4>
+        <p>Violações de DRY, OCP e riscos de inconsistência</p>
+      </div>
+      <div class="card purple">
+        <div class="card-icon">✅</div>
+        <h4>Template Method (GoF)</h4>
+        <p>Esqueleto do algoritmo na superclasse + steps variáveis nas subclasses</p>
+      </div>
+      <div class="card purple">
+        <div class="card-icon">🚀</div>
+        <h4>Reflexão e Anotações</h4>
+        <p>Desacoplamento máximo com <code>@PassoRelatorio</code> e Java Reflection</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: Problema -->
+  <div class="slide slide-problem" id="slide-2">
+    <span class="slide-num">3 / 14</span>
+    <div class="slide-label" style="--accent2:#f87171">🔴 Definição do Problema</div>
+    <h2>Sistema de <span style="color:#f87171">Geração de Relatórios</span></h2>
+    <p class="lead">Uma empresa precisa gerar relatórios financeiros em <strong>3 formatos</strong>: PDF, HTML e CSV. O fluxo de geração é sempre o mesmo — só o formato muda.</p>
+    <div class="cards cards-3" style="max-width:850px;margin-bottom:1.2rem">
+      <div class="card">
+        <div class="card-icon">📄</div>
+        <h4>PDF</h4>
+        <p>Impressão e arquivamento formal</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">🌐</div>
+        <h4>HTML</h4>
+        <p>Visualização em portais web internos</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h4>CSV</h4>
+        <p>Importação em planilhas e BI</p>
+      </div>
+    </div>
+    <div class="highlight-box">
+      <strong>Fluxo invariante:</strong> Coletar dados → Processar → Formatar cabeçalho → Formatar corpo → Formatar rodapé → Exportar<br/>
+      <span style="color:var(--text2);font-size:0.85rem">Apenas os passos de formatação mudam entre os formatos.</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: Solução ingênua -->
+  <div class="slide slide-problem" id="slide-3">
+    <span class="slide-num">4 / 14</span>
+    <div class="slide-label" style="--accent2:#f87171">❌ Versão 1 — Sem GoF</div>
+    <h2>A solução <span style="color:#f87171">ingênua</span> e seus problemas</h2>
+    <div class="two-col">
+      <div>
+        <div class="code-block" style="font-size:0.72rem">
+          <span class="code-label">RelatorioPDF.java</span>
+<span class="kw">public void</span> <span class="fn">gerar</span>() {
+  <span class="cm">// Passo 1 — DUPLICADO</span>
+  coletarDados();
+  <span class="cm">// Passo 2 — DUPLICADO</span>
+  processarDados();
+  formatarPDF(); <span class="cm">// único</span>
+  <span class="cm">// Passo 6 — DUPLICADO</span>
+  exportar();
+}</div>
+        <div class="code-block" style="margin-top:0.7rem;font-size:0.72rem">
+          <span class="code-label">RelatorioHTML.java</span>
+<span class="kw">public void</span> <span class="fn">gerar</span>() {
+  <span class="cm">// Passo 1 — DUPLICADO ❌</span>
+  coletarDados();
+  <span class="cm">// Passo 2 — DUPLICADO ❌</span>
+  processarDados();
+  formatarHTML(); <span class="cm">// único</span>
+  <span class="cm">// Passo 6 — DUPLICADO ❌</span>
+  exportar();
+}</div>
+      </div>
+      <div>
+        <ul class="check-list">
+          <li><span class="ico">🔴</span><div><strong>Violação do DRY</strong><br/><span>3 cópias dos passos 1, 2 e 6</span></div></li>
+          <li><span class="ico">🔴</span><div><strong>Violação do OCP</strong><br/><span>Novo passo = editar 3 arquivos</span></div></li>
+          <li><span class="ico">🔴</span><div><strong>Sem garantia de ordem</strong><br/><span>Cada classe pode omitir um passo</span></div></li>
+          <li><span class="ico">🔴</span><div><strong>Alto risco de bug</strong><br/><span>Corrigir em 1 lugar e esquecer os outros 2</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: O Padrão -->
+  <div class="slide slide-solution" id="slide-4">
+    <span class="slide-num">5 / 14</span>
+    <div class="slide-label">✅ Padrão GoF</div>
+    <h2>O que é o <span>Template Method</span>?</h2>
+    <div class="highlight-box" style="margin-bottom:1.2rem;border-color:rgba(34,197,94,0.4);background:rgba(34,197,94,0.08);color:#86efac">
+      <strong>Definição (GoF):</strong> "Define o esqueleto de um algoritmo em uma operação, postergando alguns passos para subclasses. Permite que subclasses redefinam certos passos sem alterar a estrutura do algoritmo."
+    </div>
+    <div class="cards cards-2" style="max-width:850px">
+      <div class="card success">
+        <div class="card-icon">🏗️</div>
+        <h4>Classe Abstrata</h4>
+        <p>Define o método template (<code>final</code>) e implementa os passos fixos</p>
+      </div>
+      <div class="card success">
+        <div class="card-icon">🧩</div>
+        <h4>Métodos Abstratos</h4>
+        <p>Passos variáveis — subclasses são obrigadas a implementar</p>
+      </div>
+      <div class="card success">
+        <div class="card-icon">🪝</div>
+        <h4>Hook Methods</h4>
+        <p>Passos opcionais com implementação padrão vazia. Subclasse decide se participa</p>
+      </div>
+      <div class="card success">
+        <div class="card-icon">🔒</div>
+        <h4>Invariante Garantido</h4>
+        <p><code>final</code> impede que a ordem dos passos seja alterada por subclasses</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: Aplicação — Código -->
+  <div class="slide slide-code" id="slide-5">
+    <span class="slide-num">6 / 14</span>
+    <div class="slide-label">☕ Versão 2 — Código</div>
+    <h2>Template Method na <span>prática</span></h2>
+    <div class="two-col">
+      <div class="code-block">
+        <span class="code-label">RelatorioGerador.java</span>
+<span class="kw">public abstract class</span> <span class="type">RelatorioGerador</span> {
+
+  <span class="cm">// TEMPLATE — ninguém muda a ordem!</span>
+  <span class="kw">public final void</span> <span class="fn">gerarRelatorio</span>() {
+    <span class="fn">coletarDados</span>();      <span class="cm">// fixo</span>
+    <span class="fn">processarDados</span>();   <span class="cm">// fixo</span>
+    <span class="fn">formatarCabecalho</span>(); <span class="cm">// abstract</span>
+    <span class="fn">formatarCorpo</span>();     <span class="cm">// abstract</span>
+    <span class="fn">incluirMarcaDagua</span>(); <span class="cm">// hook</span>
+    <span class="fn">formatarRodape</span>();    <span class="cm">// abstract</span>
+    <span class="fn">exportar</span>();          <span class="cm">// fixo</span>
+  }
+
+  <span class="kw">protected abstract void</span> <span class="fn">formatarCabecalho</span>();
+  <span class="kw">protected abstract void</span> <span class="fn">formatarCorpo</span>();
+  <span class="kw">protected abstract void</span> <span class="fn">formatarRodape</span>();
+
+  <span class="cm">// Hook — implementação padrão vazia</span>
+  <span class="kw">protected void</span> <span class="fn">incluirMarcaDagua</span>() { }
+}</div>
+      <div class="code-block">
+        <span class="code-label">RelatorioPDF.java</span>
+<span class="kw">public class</span> <span class="type">RelatorioPDF</span>
+    <span class="kw">extends</span> <span class="type">RelatorioGerador</span> {
+
+  <span class="ann">@Override</span>
+  <span class="kw">protected void</span> <span class="fn">formatarCabecalho</span>() {
+    <span class="cm">// lógica específica PDF</span>
+    println(<span class="str">"RELATÓRIO PDF LANDSCAPE"</span>);
+  }
+
+  <span class="ann">@Override</span>
+  <span class="kw">protected void</span> <span class="fn">formatarCorpo</span>() {
+    <span class="cm">// lógica específica PDF</span>
+  }
+
+  <span class="ann">@Override</span>
+  <span class="kw">protected void</span> <span class="fn">formatarRodape</span>() {
+    println(<span class="str">"Página 1 de 1 | PDF/A"</span>);
+  }
+
+  <span class="cm">// Sobrescreve o hook!</span>
+  <span class="ann">@Override</span>
+  <span class="kw">protected void</span> <span class="fn">incluirMarcaDagua</span>() {
+    println(<span class="str">"CONFIDENCIAL"</span>);
+  }
+}</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Comparativo V1 vs V2 -->
+  <div class="slide slide-solution" id="slide-6">
+    <span class="slide-num">7 / 14</span>
+    <div class="slide-label">⚖️ Comparativo</div>
+    <h2>Antes vs <span>Depois</span> do Template Method</h2>
+    <table class="comp-table">
+      <thead>
+        <tr>
+          <th>Característica</th>
+          <th><span class="badge badge-red">❌ V1</span> Sem GoF</th>
+          <th><span class="badge badge-green">✅ V2</span> Template Method</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Código duplicado</td><td class="nok">Sim (3 cópias)</td><td class="ok">Não</td></tr>
+        <tr><td>Fluxo garantido</td><td class="nok">Não</td><td class="ok"><code>final</code></td></tr>
+        <tr><td>Adicionar passo</td><td class="nok">3 arquivos</td><td class="ok">1 arquivo</td></tr>
+        <tr><td>Adicionar formato</td><td class="mid">Nova classe (todo fluxo)</td><td class="ok">Nova subclasse (só o diferente)</td></tr>
+        <tr><td>OCP respeitado</td><td class="nok">Violado</td><td class="ok">Respeitado</td></tr>
+        <tr><td>Hook method</td><td class="nok">Não</td><td class="ok">incluirMarcaDagua()</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight-box" style="margin-top:1.2rem">
+      <strong>Resultado:</strong> Redução de ~40% de código, eliminação de duplicações e manutenção centralizada em um único lugar.
+    </div>
+  </div>
+
+  <!-- SLIDE 8: Hook Methods -->
+  <div class="slide slide-code" id="slide-7">
+    <span class="slide-num">8 / 14</span>
+    <div class="slide-label">🪝 Hook Method</div>
+    <h2>Extensão opcional com <span>Hook Methods</span></h2>
+    <p class="lead">Hooks são passos com implementação padrão que subclasses podem sobrescrever <strong>se quiserem</strong>. Permitem pontos de extensão sem obrigar implementação.</p>
+    <div class="two-col">
+      <div>
+        <div class="code-block" style="font-size:0.78rem">
+          <span class="code-label">Superclasse — Hook vazio</span>
+<span class="cm">// Padrão: não faz nada</span>
+<span class="kw">protected void</span> <span class="fn">incluirMarcaDagua</span>() {
+  <span class="cm">// hook vazio</span>
+}</div>
+        <div class="code-block" style="margin-top:0.7rem;font-size:0.78rem">
+          <span class="code-label">RelatorioPDF — sobrescreve</span>
+<span class="ann">@Override</span>
+<span class="kw">protected void</span> <span class="fn">incluirMarcaDagua</span>() {
+  println(<span class="str">"CONFIDENCIAL"</span>); <span class="cm">// ✅</span>
+}</div>
+      </div>
+      <div>
+        <ul class="check-list">
+          <li><span class="ico">📄</span><div><strong>RelatorioPDF</strong><br/><span>Sobrescreve → adiciona "CONFIDENCIAL"</span></div></li>
+          <li><span class="ico">🌐</span><div><strong>RelatorioHTML</strong><br/><span>Não sobrescreve → sem marca d'água</span></div></li>
+          <li><span class="ico">📊</span><div><strong>RelatorioCSV</strong><br/><span>Não sobrescreve → sem marca d'água</span></div></li>
+        </ul>
+        <div class="card warning" style="margin-top:1rem">
+          <div class="card-icon">💡</div>
+          <h4>Por que hooks são poderosos?</h4>
+          <p>A subclasse decide <em>se</em> quer participar de um passo do algoritmo — sem quebrar o contrato da superclasse.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: Reflexão e Anotações - Motivação -->
+  <div class="slide slide-annotation" id="slide-8">
+    <span class="slide-num">9 / 14</span>
+    <div class="slide-label" style="--accent2:#fcd34d">⚡ Versão 3 — Motivação</div>
+    <h2>Por que ir além? <span style="color:#fcd34d">Reflexão e Anotações</span></h2>
+    <p class="lead">Na Versão 2, o método template ainda está <strong>acoplado aos nomes dos métodos</strong> em tempo de compilação:</p>
+    <div class="code-block" style="max-width:600px;margin-bottom:1.5rem;font-size:0.8rem">
+      <span class="code-label">Versão 2 — acoplamento</span>
+<span class="fn">formatarCabecalho</span>(); <span class="cm">// nome fixo em código</span>
+<span class="fn">formatarCorpo</span>();     <span class="cm">// nome fixo em código</span>
+<span class="fn">formatarRodape</span>();    <span class="cm">// nome fixo em código</span></div>
+    <div class="cards cards-2" style="max-width:800px">
+      <div class="card warning">
+        <div class="card-icon">⚠️</div>
+        <h4>Problema remanescente</h4>
+        <p>A superclasse conhece os nomes dos métodos das subclasses. Para renomear um método é preciso atualizar a superclasse e todas as subclasses.</p>
+      </div>
+      <div class="card success">
+        <div class="card-icon">🚀</div>
+        <h4>Solução: Anotações + Reflexão</h4>
+        <p>O executor descobre os passos via <code>@PassoRelatorio</code> — sem conhecer os nomes nem as classes concretas.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: As Anotações -->
+  <div class="slide slide-annotation" id="slide-9">
+    <span class="slide-num">10 / 14</span>
+    <div class="slide-label" style="--accent2:#fcd34d">🏷️ Anotações Criadas</div>
+    <h2>Duas <span style="color:#fcd34d">anotações próprias</span></h2>
+    <div class="two-col">
+      <div>
+        <div class="code-block">
+          <span class="code-label">PassoRelatorio.java</span>
+<span class="ann">@Retention</span>(RUNTIME)
+<span class="ann">@Target</span>(METHOD)
+<span class="kw">public @interface</span> <span class="type">PassoRelatorio</span> {
+
+  <span class="cm">// Ordem de execução</span>
+  <span class="kw">int</span> <span class="fn">ordem</span>();
+
+  <span class="cm">// Descrição legível</span>
+  <span class="type">String</span> <span class="fn">descricao</span>()
+    <span class="kw">default</span> <span class="str">"Passo"</span>;
+
+  <span class="cm">// Obrigatório ou hook?</span>
+  <span class="kw">boolean</span> <span class="fn">obrigatorio</span>()
+    <span class="kw">default true</span>;
+}</div>
+        <p style="font-size:0.78rem;color:var(--text2);margin-top:0.5rem">Marca e ordena métodos do algoritmo</p>
+      </div>
+      <div>
+        <div class="code-block">
+          <span class="code-label">RelatorioConfig.java</span>
+<span class="ann">@Retention</span>(RUNTIME)
+<span class="ann">@Target</span>(TYPE)
+<span class="kw">public @interface</span> <span class="type">RelatorioConfig</span> {
+
+  <span class="cm">// Nome amigável do formato</span>
+  <span class="type">String</span> <span class="fn">nome</span>();
+
+  <span class="cm">// Extensão do arquivo</span>
+  <span class="type">String</span> <span class="fn">extensao</span>();
+
+  <span class="cm">// Versão do gerador</span>
+  <span class="type">String</span> <span class="fn">versao</span>()
+    <span class="kw">default</span> <span class="str">"1.0"</span>;
+}</div>
+        <p style="font-size:0.78rem;color:var(--text2);margin-top:0.5rem">Declara metadados da classe</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: Uso das anotações -->
+  <div class="slide slide-code" id="slide-10">
+    <span class="slide-num">11 / 14</span>
+    <div class="slide-label">☕ Versão 3 — Aplicação</div>
+    <h2>Anotações <span>nas classes</span></h2>
+    <div class="two-col">
+      <div class="code-block" style="font-size:0.74rem">
+        <span class="code-label">RelatorioPDF.java</span>
+<span class="ann">@RelatorioConfig</span>(
+  nome = <span class="str">"Relatório PDF"</span>,
+  extensao = <span class="str">"pdf"</span>,
+  versao = <span class="str">"2.1"</span>
+)
+<span class="kw">public class</span> <span class="type">RelatorioPDF</span>
+    <span class="kw">extends</span> <span class="type">RelatorioGerador</span> {
+
+  <span class="ann">@PassoRelatorio</span>(ordem=<span class="num">3</span>, descricao=<span class="str">"Cabeçalho PDF"</span>)
+  <span class="kw">public void</span> <span class="fn">formatarCabecalho</span>() { ... }
+
+  <span class="ann">@PassoRelatorio</span>(ordem=<span class="num">4</span>, descricao=<span class="str">"Corpo PDF"</span>)
+  <span class="kw">public void</span> <span class="fn">formatarCorpo</span>() { ... }
+
+  <span class="ann">@PassoRelatorio</span>(ordem=<span class="num">5</span>,
+    descricao=<span class="str">"Marca d'água"</span>,
+    obrigatorio=<span class="kw">false</span>)
+  <span class="kw">public void</span> <span class="fn">incluirMarcaDagua</span>() { ... }
+
+  <span class="ann">@PassoRelatorio</span>(ordem=<span class="num">6</span>, descricao=<span class="str">"Rodapé PDF"</span>)
+  <span class="kw">public void</span> <span class="fn">formatarRodape</span>() { ... }
+}</div>
+      <div class="code-block" style="font-size:0.74rem">
+        <span class="code-label">ExecutorRelatorio.java — usa reflexão</span>
+<span class="kw">public void</span> <span class="fn">executar</span>(<span class="type">RelatorioGerador</span> g) {
+
+  <span class="cm">// 1. Lê @RelatorioConfig da classe</span>
+  <span class="type">RelatorioConfig</span> cfg =
+    classe.<span class="fn">getAnnotation</span>(<span class="type">RelatorioConfig</span>.class);
+
+  <span class="cm">// 2. Descobre passos anotados</span>
+  <span class="type">List</span>&lt;<span class="type">Method</span>&gt; passos =
+    <span class="fn">descobrirPassos</span>(classe);
+
+  <span class="cm">// 3. Ordena por @PassoRelatorio.ordem</span>
+  passos.<span class="fn">sort</span>(Comparator
+    .<span class="fn">comparingInt</span>(m ->
+      m.<span class="fn">getAnnotation</span>(<span class="type">PassoRelatorio</span>.class)
+       .<span class="fn">ordem</span>()));
+
+  <span class="cm">// 4. Invoca dinamicamente!</span>
+  <span class="kw">for</span> (<span class="type">Method</span> m : passos) {
+    m.<span class="fn">setAccessible</span>(<span class="kw">true</span>);
+    m.<span class="fn">invoke</span>(g); <span class="cm">// sem conhecer o nome!</span>
+  }
+}</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 12: Redução de acoplamento -->
+  <div class="slide slide-solution" id="slide-11">
+    <span class="slide-num">12 / 14</span>
+    <div class="slide-label">🔗 Acoplamento</div>
+    <h2>Como <span>reduz o acoplamento</span></h2>
+    <div class="two-col" style="align-items:start;max-width:900px">
+      <div>
+        <div class="card danger" style="margin-bottom:1rem">
+          <h4>❌ Versão 2 — acoplado aos nomes</h4>
+          <p style="margin-top:0.5rem">Template chama <code>formatarCabecalho()</code>, <code>formatarCorpo()</code> — nomes fixos no código da superclasse</p>
+        </div>
+        <div class="code-block" style="font-size:0.75rem">
+<span class="cm">// Versão 2: executor sabe os nomes</span>
+<span class="fn">formatarCabecalho</span>(); <span class="cm">// acoplado ❌</span>
+<span class="fn">formatarCorpo</span>();     <span class="cm">// acoplado ❌</span>
+<span class="fn">formatarRodape</span>();    <span class="cm">// acoplado ❌</span></div>
+      </div>
+      <div>
+        <div class="card success" style="margin-bottom:1rem">
+          <h4>✅ Versão 3 — desacoplado</h4>
+          <p style="margin-top:0.5rem">Executor descobre tudo via <code>@PassoRelatorio</code> — não conhece nem os nomes, nem as classes concretas</p>
+        </div>
+        <div class="code-block" style="font-size:0.75rem">
+<span class="cm">// Versão 3: executor usa reflexão</span>
+<span class="kw">for</span> (<span class="type">Method</span> m : passos) {
+  m.<span class="fn">invoke</span>(g); <span class="cm">// ✅ sem nome fixo</span>
+}
+
+<span class="cm">// Adicionar RelatorioXML?</span>
+<span class="cm">// Só criar a classe com @!</span>
+<span class="cm">// Executor NÃO muda.</span></div>
+      </div>
+    </div>
+    <div class="highlight-box" style="margin-top:1rem">
+      <strong>Acoplamento Versão 3:</strong> <code>ExecutorRelatorio</code> depende apenas de <code>@PassoRelatorio</code> e <code>RelatorioGerador</code>. Não depende de <code>RelatorioPDF</code>, <code>RelatorioHTML</code> nem <code>RelatorioCSV</code>.
+    </div>
+  </div>
+
+  <!-- SLIDE 13: Demo -->
+  <div class="slide slide-code" id="slide-12">
+    <span class="slide-num">13 / 14</span>
+    <div class="slide-label">🖥️ Demonstração</div>
+    <h2>Executando as <span>3 versões</span></h2>
+    <p class="lead">Pré-requisito: JDK 11+ instalado. Verifique com <code>java -version</code>.</p>
+    <div class="cards cards-3" style="margin-bottom:1.2rem">
+      <div class="card danger">
+        <div class="card-icon">🔴</div>
+        <h4>Versão 1 — Problema</h4>
+        <p>Observe o código duplicado nos 3 métodos <code>gerar()</code></p>
+      </div>
+      <div class="card success">
+        <div class="card-icon">✅</div>
+        <h4>Versão 2 — Template</h4>
+        <p>Um único fluxo na superclasse + hook do PDF</p>
+      </div>
+      <div class="card purple">
+        <div class="card-icon">🚀</div>
+        <h4>Versão 3 — Reflexão</h4>
+        <p>Executor descobre os passos dinamicamente</p>
+      </div>
+    </div>
+    <div class="code-block" style="max-width:750px;font-size:0.78rem">
+      <span class="code-label">Compilar e executar</span>
+<span class="cm"># Opção fácil (Windows):</span>
+executar_tudo.bat
+
+<span class="cm"># Versão 1:</span>
+cd versao1_sem_gof/src && javac *.java && java Main
+
+<span class="cm"># Versão 2:</span>
+cd versao2_com_template/src && javac *.java && java Main
+
+<span class="cm"># Versão 3:</span>
+cd versao3_com_anotacoes/src
+javac -d . anotacoes/*.java *.java
+java Main</div>
+  </div>
+
+  <!-- SLIDE 14: Conclusão -->
+  <div class="slide slide-end" id="slide-13">
+    <span class="slide-num">14 / 14</span>
+    <div class="cover-eyebrow" style="margin-bottom:1.5rem">🎓 Conclusão</div>
+    <h2 style="font-size:clamp(1.8rem,3.5vw,2.8rem);text-align:center;margin-bottom:2rem">O que aprendemos com o <span>Template Method</span></h2>
+    <div class="cards cards-2" style="max-width:800px;margin-bottom:2rem">
+      <div class="card success">
+        <div class="card-icon">✅</div>
+        <h4>Template Method resolve</h4>
+        <p>Duplicação · Inconsistência · Violação OCP · Falta de invariante</p>
+      </div>
+      <div class="card purple">
+        <div class="card-icon">🚀</div>
+        <h4>Reflexão + Anotações agregam</h4>
+        <p>Desacoplamento máximo · Extensibilidade · Metadados declarativos</p>
+      </div>
+    </div>
+    <div class="cover-team">
+      <span class="team-chip">👤 Caio Roldão</span>
+      <span class="team-chip">👤 João Mário</span>
+      <span class="team-chip">👤 Juvenal Junior</span>
+    </div>
+    <p style="color:var(--text2);margin-top:1.5rem;font-size:0.85rem">Obrigado! 🙏</p>
+  </div>
+
+</div><!-- /slideshow -->
+
+<!-- Nav -->
+<div class="nav">
+  <button class="nav-btn" id="btn-prev" onclick="changeSlide(-1)" disabled>← Anterior</button>
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.5rem">
+    <div class="progress" id="progress"></div>
+    <div class="key-hint"><kbd class="kbd">←</kbd> <kbd class="kbd">→</kbd> ou <kbd class="kbd">Space</kbd> para navegar</div>
+  </div>
+  <button class="nav-btn" id="btn-next" onclick="changeSlide(1)">Próximo →</button>
+</div>
+
+<script>
+  const TOTAL = 14;
+  let current = 0;
+
+  const progress = document.getElementById('progress');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+
+  // Build dots
+  for (let i = 0; i < TOTAL; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'dot' + (i === 0 ? ' active' : '');
+    dot.onclick = () => goTo(i);
+    progress.appendChild(dot);
+  }
+
+  function goTo(n) {
+    const slides = document.querySelectorAll('.slide');
+    slides[current].classList.remove('active');
+    slides[current].classList.add('prev');
+    setTimeout(() => slides[current < n ? current : n + 1]?.classList.remove('prev'), 450);
+
+    current = n;
+    slides.forEach((s, i) => {
+      s.classList.remove('active', 'prev');
+    });
+    slides[current].classList.add('active');
+
+    document.querySelectorAll('.dot').forEach((d, i) => {
+      d.classList.toggle('active', i === current);
+    });
+
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === TOTAL - 1;
+    btnNext.textContent = current === TOTAL - 1 ? 'Fim ✓' : 'Próximo →';
+  }
+
+  function changeSlide(dir) {
+    const next = current + dir;
+    if (next >= 0 && next < TOTAL) goTo(next);
+  }
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); changeSlide(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); changeSlide(-1); }
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(TOTAL - 1);
+  });
+</script>
+</body>
+</html>

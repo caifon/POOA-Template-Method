@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Documento — Template Method | POOA UCSal</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Times+New+Roman&family=Arial:wght@400;700&display=swap" rel="stylesheet" />
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #e8e8e8;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 12pt;
+  color: #000;
+}
+
+/* Page container */
+.page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 20px auto;
+  background: #fff;
+  padding: 25mm 25mm 25mm 30mm;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+}
+
+/* Cover page */
+.cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 247mm;
+  text-align: center;
+  gap: 0;
+}
+.cover-logo {
+  font-size: 14pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+}
+.cover-inst {
+  font-size: 12pt;
+  margin-bottom: 40px;
+}
+.cover-title {
+  font-size: 18pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.cover-subtitle {
+  font-size: 14pt;
+  margin-bottom: 60px;
+}
+.cover-pattern-box {
+  border: 2px solid #000;
+  padding: 16px 40px;
+  margin-bottom: 60px;
+  text-align: center;
+}
+.cover-pattern-box .label { font-size: 11pt; }
+.cover-pattern-box .pattern { font-size: 20pt; font-weight: bold; }
+.cover-team { margin-bottom: 40px; }
+.cover-team p { font-size: 12pt; margin-bottom: 4px; }
+.cover-date { font-size: 11pt; margin-top: auto; }
+
+/* Headings */
+h1 {
+  font-size: 16pt;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-bottom: 2px solid #000;
+  padding-bottom: 4px;
+  margin: 24px 0 12px 0;
+}
+h2 {
+  font-size: 13pt;
+  font-weight: bold;
+  margin: 20px 0 8px 0;
+}
+h3 {
+  font-size: 12pt;
+  font-weight: bold;
+  margin: 14px 0 6px 0;
+}
+
+/* Body text */
+p {
+  font-size: 12pt;
+  line-height: 1.8;
+  text-align: justify;
+  margin-bottom: 10px;
+}
+
+/* Lists */
+ul, ol {
+  margin: 8px 0 12px 24px;
+  line-height: 1.8;
+}
+li { font-size: 12pt; margin-bottom: 4px; }
+
+/* Code inline */
+code {
+  font-family: 'Courier New', monospace;
+  font-size: 10.5pt;
+  background: #f4f4f4;
+  padding: 1px 4px;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+}
+
+/* Code block */
+pre {
+  font-family: 'Courier New', monospace;
+  font-size: 9.5pt;
+  background: #f8f8f8;
+  border: 1px solid #ccc;
+  border-left: 4px solid #555;
+  padding: 10px 14px;
+  margin: 10px 0 14px 0;
+  overflow-x: auto;
+  line-height: 1.5;
+  white-space: pre;
+}
+
+/* Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 12px 0 16px 0;
+  font-size: 11pt;
+}
+th {
+  background: #333;
+  color: #fff;
+  padding: 7px 10px;
+  text-align: left;
+  font-weight: bold;
+  border: 1px solid #333;
+}
+td {
+  padding: 6px 10px;
+  border: 1px solid #bbb;
+  vertical-align: top;
+}
+tr:nth-child(even) td { background: #f5f5f5; }
+
+/* Team table */
+.team-table th { background: #444; }
+
+/* Diagrams */
+.diagram-section {
+  margin: 16px 0;
+  text-align: center;
+}
+.diagram-caption {
+  font-size: 10.5pt;
+  font-style: italic;
+  text-align: center;
+  color: #333;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+.mermaid { display: flex; justify-content: center; }
+
+/* Info box */
+.info-box {
+  border: 1px solid #aaa;
+  background: #f9f9f9;
+  padding: 10px 14px;
+  margin: 12px 0;
+  font-size: 11pt;
+  line-height: 1.6;
+  border-left: 4px solid #555;
+}
+.info-box strong { display: block; margin-bottom: 4px; }
+
+/* Section break */
+.page-break { page-break-after: always; }
+
+/* Print tweaks */
+@media print {
+  body { background: white; }
+  .page { margin: 0; box-shadow: none; width: 100%; padding: 20mm 20mm 20mm 25mm; }
+}
+
+/* Annotation highlight */
+.ann { color: #8B4513; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<!-- ========== CAPA ========== -->
+<div class="page">
+  <div class="cover">
+    <div>
+      <div class="cover-logo">Universidade Católica do Salvador</div>
+      <div class="cover-inst">UCSal — Programação Orientada a Objetos Avançada</div>
+    </div>
+    <div style="margin-top:60px">
+      <div class="cover-title">Trabalho AVII</div>
+      <div class="cover-subtitle">Padrões de Projeto GoF em Java</div>
+    </div>
+    <div class="cover-pattern-box">
+      <div class="label">Padrão Escolhido</div>
+      <div class="pattern">Template Method</div>
+    </div>
+    <div class="cover-team">
+      <p><strong>Caio Roldão</strong></p>
+      <p><strong>João Mário</strong></p>
+      <p><strong>Juvenal Junior</strong></p>
+    </div>
+    <div class="cover-date">Salvador — Junho de 2026</div>
+  </div>
+</div>
+
+<!-- ========== SUMÁRIO ========== -->
+<div class="page">
+  <h1>Sumário</h1>
+  <ol style="line-height:2.5">
+    <li>Integrantes</li>
+    <li>Padrão Escolhido</li>
+    <li>Problema Proposto</li>
+    <li>Por que a Solução Inicial é Inadequada</li>
+    <li>Aplicação do Padrão Template Method</li>
+    <li>Diagrama de Classes UML</li>
+    <li>Uso de Reflexão e Anotações</li>
+    <li>Instruções para Executar o Projeto</li>
+  </ol>
+</div>
+
+<!-- ========== 1. INTEGRANTES ========== -->
+<div class="page">
+  <h1>1. Integrantes</h1>
+  <table class="team-table">
+    <thead>
+      <tr><th>Nome</th><th>Papel</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Caio Roldão</td><td>Desenvolvimento e Documentação</td></tr>
+      <tr><td>João Mário</td><td>Desenvolvimento e Documentação</td></tr>
+      <tr><td>Juvenal Junior</td><td>Desenvolvimento e Documentação</td></tr>
+    </tbody>
+  </table>
+
+  <h1 style="margin-top:32px">2. Padrão Escolhido</h1>
+  <h2>Template Method — Padrão Comportamental GoF</h2>
+  <p>
+    O <strong>Template Method</strong> é um padrão de projeto comportamental que define o esqueleto de um algoritmo em uma operação, postergando a definição de alguns passos para subclasses. Ele permite que subclasses redefinam certos passos de um algoritmo sem alterar a estrutura geral do mesmo.
+  </p>
+  <div class="info-box">
+    <strong>Definição formal (Gang of Four, 1994):</strong>
+    "Define the skeleton of an algorithm in an operation, deferring some steps to subclasses. Template Method lets subclasses redefine certain steps of an algorithm without changing the algorithm's structure."
+  </div>
+  <h3>Classificação</h3>
+  <ul>
+    <li><strong>Família:</strong> Comportamental</li>
+    <li><strong>Escopo:</strong> Classe (usa herança)</li>
+    <li><strong>Intenção:</strong> Invariância do algoritmo com variância dos passos</li>
+    <li><strong>Participantes:</strong> AbstractClass (define o template) e ConcreteClass (implementa passos variáveis)</li>
+  </ul>
+</div>
+
+<!-- ========== 3. PROBLEMA ========== -->
+<div class="page">
+  <h1>3. Problema Proposto</h1>
+  <h2>Sistema de Geração de Relatórios Corporativos</h2>
+  <p>
+    Uma empresa precisa de um sistema que gere <strong>relatórios financeiros</strong> em três formatos distintos: <strong>PDF</strong>, <strong>HTML</strong> e <strong>CSV</strong>. Cada formato é utilizado em um contexto diferente:
+  </p>
+  <ul>
+    <li><strong>PDF:</strong> Impressão e arquivamento formal de documentos</li>
+    <li><strong>HTML:</strong> Visualização em portais web internos da empresa</li>
+    <li><strong>CSV:</strong> Importação em planilhas e ferramentas de Business Intelligence</li>
+  </ul>
+  <h3>Requisitos do Sistema</h3>
+  <ul>
+    <li>Cada relatório deve seguir sempre o mesmo fluxo de execução</li>
+    <li>O formato de saída (cabeçalho, corpo, rodapé) varia conforme o tipo</li>
+    <li>Novos formatos poderão ser adicionados no futuro</li>
+    <li>Deve ser possível adicionar novos passos ao fluxo sem grande esforço</li>
+  </ul>
+  <h3>Fluxo de Geração (invariante)</h3>
+  <div class="info-box">
+    <strong>Sequência obrigatória para todos os formatos:</strong>
+    [1] Coletar dados → [2] Processar dados → [3] Formatar cabeçalho → [4] Formatar corpo → [5] Incluir marca d'água (opcional) → [6] Formatar rodapé → [7] Exportar arquivo
+  </div>
+  <p>
+    Os passos 1, 2 e 7 são idênticos independentemente do formato. Apenas os passos 3, 4 e 6 variam de acordo com o tipo de relatório. O passo 5 é opcional (hook).
+  </p>
+
+  <h1 style="margin-top:32px">4. Por que a Solução Inicial é Inadequada</h1>
+  <p>
+    Na primeira versão do sistema (<em>Versão 1 — Sem GoF</em>), a abordagem ingênua consistiu em criar três classes independentes — <code>RelatorioPDF</code>, <code>RelatorioHTML</code> e <code>RelatorioCSV</code> — cada uma com seu próprio método <code>gerar()</code> contendo todo o fluxo.
+  </p>
+  <h3>Problemas Identificados</h3>
+  <table>
+    <thead><tr><th>Problema</th><th>Causa</th><th>Consequência</th></tr></thead>
+    <tbody>
+      <tr><td>Código duplicado</td><td>Passos 1, 2 e 7 idênticos nas 3 classes</td><td>Violação do princípio DRY</td></tr>
+      <tr><td>Sem garantia de ordem</td><td>Cada classe define seu próprio fluxo</td><td>Risco de omitir um passo</td></tr>
+      <tr><td>Violação do OCP</td><td>Adicionar passo = editar 3 arquivos</td><td>Alto risco de inconsistência</td></tr>
+      <tr><td>Alta manutenção</td><td>Bug em 1 lugar → corrigir em 3</td><td>Custo operacional elevado</td></tr>
+    </tbody>
+  </table>
+  <h3>Trecho de Código — Exemplo da Duplicação</h3>
+<pre>// RelatorioPDF.java
+public void gerar() {
+    coletarDados();      // ← DUPLICADO nas 3 classes
+    processarDados();    // ← DUPLICADO nas 3 classes
+    formatarPDF();       // único por classe
+    exportar();          // ← DUPLICADO nas 3 classes
+}
+
+// RelatorioHTML.java — mesma estrutura duplicada
+public void gerar() {
+    coletarDados();      // ← DUPLICADO
+    processarDados();    // ← DUPLICADO
+    formatarHTML();
+    exportar();          // ← DUPLICADO
+}</pre>
+</div>
+
+<!-- ========== 5. APLICAÇÃO DO PADRÃO ========== -->
+<div class="page">
+  <h1>5. Aplicação do Padrão Template Method</h1>
+  <h2>5.1 Estrutura do Padrão</h2>
+  <p>
+    O padrão Template Method é aplicado por meio de uma <strong>classe abstrata</strong> <code>RelatorioGerador</code> que define o método template <code>gerarRelatorio()</code> como <strong>final</strong>, impedindo que subclasses alterem a ordem dos passos. Os passos que variam entre os formatos são declarados como <strong>abstract</strong>, obrigando cada subclasse a implementá-los.
+  </p>
+  <h3>5.2 O Método Template</h3>
+<pre>// RelatorioGerador.java — Versão 2
+public abstract class RelatorioGerador {
+
+    public final void gerarRelatorio() {   // TEMPLATE — final!
+        coletarDados();        // passo fixo (implementado aqui)
+        processarDados();      // passo fixo (implementado aqui)
+        formatarCabecalho();   // abstract — subclasse implementa
+        formatarCorpo();       // abstract — subclasse implementa
+        incluirMarcaDagua();   // hook     — opcional
+        formatarRodape();      // abstract — subclasse implementa
+        exportar();            // passo fixo (implementado aqui)
+    }
+
+    protected abstract void formatarCabecalho();
+    protected abstract void formatarCorpo();
+    protected abstract void formatarRodape();
+
+    // Hook method — implementação padrão vazia
+    protected void incluirMarcaDagua() { }
+}</pre>
+
+  <h3>5.3 Implementação das Subclasses</h3>
+  <p>
+    Cada subclasse implementa <strong>apenas os passos que variam</strong>. O <code>RelatorioPDF</code> também sobrescreve o hook <code>incluirMarcaDagua()</code> para adicionar a marca "CONFIDENCIAL":
+  </p>
+<pre>// RelatorioPDF.java — apenas o que muda
+public class RelatorioPDF extends RelatorioGerador {
+
+    @Override
+    protected void formatarCabecalho() {
+        System.out.println("RELATÓRIO PDF - LANDSCAPE");
+    }
+
+    @Override
+    protected void formatarCorpo() {
+        // renderiza corpo em formato PDF
+    }
+
+    @Override
+    protected void formatarRodape() {
+        System.out.println("Página 1 de 1 | PDF/A");
+    }
+
+    // Sobrescreve o hook — marca d'água apenas no PDF
+    @Override
+    protected void incluirMarcaDagua() {
+        System.out.println("[PDF] CONFIDENCIAL");
+    }
+}</pre>
+
+  <h2>5.4 Como o Padrão Resolve o Problema</h2>
+  <table>
+    <thead><tr><th>Versão 1 (Sem GoF)</th><th>Versão 2 (Template Method)</th></tr></thead>
+    <tbody>
+      <tr><td>Fluxo definido em 3 classes separadas</td><td>Fluxo definido 1 vez na superclasse</td></tr>
+      <tr><td>Código duplicado nos passos 1, 2 e 7</td><td>Sem duplicação</td></tr>
+      <tr><td>Sem garantia de ordem de execução</td><td><code>final</code> garante a ordem imutável</td></tr>
+      <tr><td>Adicionar passo = editar 3 arquivos</td><td>Adicionar passo = editar 1 arquivo</td></tr>
+      <tr><td>Sem hook points</td><td>Hook <code>incluirMarcaDagua()</code> disponível</td></tr>
+      <tr><td>OCP violado</td><td>OCP respeitado</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ========== 6. UML ========== -->
+<div class="page">
+  <h1>6. Diagrama de Classes UML</h1>
+
+  <h2>6.1 Versão 1 — Sem Padrão GoF</h2>
+  <p>Três classes independentes, sem herança. Os métodos <code>coletarDados()</code>, <code>processarDados()</code> e <code>exportar()</code> estão triplicados.</p>
+  <div class="diagram-section">
+<div class="mermaid">
+classDiagram
+    class RelatorioPDF {
+        -titulo String
+        -dados String
+        +gerar() void
+        -coletarDados() void
+        -processarDados() void
+        -formatarCabecalhoPDF() void
+        -formatarCorpoPDF() void
+        -formatarRodapePDF() void
+        -exportar() void
+    }
+    class RelatorioHTML {
+        -titulo String
+        -dados String
+        +gerar() void
+        -coletarDados() void
+        -processarDados() void
+        -formatarCabecalhoHTML() void
+        -formatarCorpoHTML() void
+        -formatarRodapeHTML() void
+        -exportar() void
+    }
+    class RelatorioCSV {
+        -titulo String
+        -dados String
+        +gerar() void
+        -coletarDados() void
+        -processarDados() void
+        -formatarCabecalhoCSV() void
+        -formatarCorpoCSV() void
+        -formatarRodapeCSV() void
+        -exportar() void
+    }
+</div>
+    <div class="diagram-caption">Figura 1 — Versão 1: classes independentes com código duplicado</div>
+  </div>
+
+  <h2>6.2 Versão 2 — Com Template Method</h2>
+  <p>A classe abstrata <code>RelatorioGerador</code> centraliza o fluxo. As subclasses implementam apenas os passos variáveis.</p>
+  <div class="diagram-section">
+<div class="mermaid">
+classDiagram
+    class RelatorioGerador {
+        &lt;&lt;abstract&gt;&gt;
+        +titulo String
+        +dados String
+        +gerarRelatorio() void
+        +coletarDados() void
+        +processarDados() void
+        +exportar() void
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +incluirMarcaDagua() void
+        +getFormato() String
+    }
+    class RelatorioPDF {
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +incluirMarcaDagua() void
+        +getFormato() String
+    }
+    class RelatorioHTML {
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +getFormato() String
+    }
+    class RelatorioCSV {
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +getFormato() String
+    }
+    RelatorioGerador <|-- RelatorioPDF : extends
+    RelatorioGerador <|-- RelatorioHTML : extends
+    RelatorioGerador <|-- RelatorioCSV : extends
+</div>
+    <div class="diagram-caption">Figura 2 — Versão 2: Template Method com classe abstrata e herança</div>
+  </div>
+</div>
+
+<!-- ========== 6 CONT. ========== -->
+<div class="page">
+  <h2>6.3 Versão 3 — Com Reflexão e Anotações</h2>
+  <p>O <code>ExecutorRelatorio</code> descobre os passos via reflexão Java, sem conhecer as classes concretas em tempo de compilação.</p>
+
+  <div class="diagram-section">
+<div class="mermaid">
+classDiagram
+    class PassoRelatorio {
+        &lt;&lt;annotation&gt;&gt;
+        +ordem int
+        +descricao String
+        +obrigatorio boolean
+    }
+    class RelatorioConfig {
+        &lt;&lt;annotation&gt;&gt;
+        +nome String
+        +extensao String
+        +versao String
+    }
+    class RelatorioGerador {
+        &lt;&lt;abstract&gt;&gt;
+        +titulo String
+        +dados String
+        +coletarDados() void
+        +processarDados() void
+        +exportar() void
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +getFormato() String
+    }
+    class RelatorioPDF {
+        &lt;&lt;anotado&gt;&gt;
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +incluirMarcaDagua() void
+    }
+    class RelatorioHTML {
+        &lt;&lt;anotado&gt;&gt;
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+    }
+    class RelatorioCSV {
+        &lt;&lt;anotado&gt;&gt;
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+    }
+    class ExecutorRelatorio {
+        +executar(gerador) void
+        -descobrirPassos(classe) List
+        -exibirMetadados(classe) void
+    }
+    RelatorioGerador <|-- RelatorioPDF : extends
+    RelatorioGerador <|-- RelatorioHTML : extends
+    RelatorioGerador <|-- RelatorioCSV : extends
+    ExecutorRelatorio ..> RelatorioGerador : usa reflexao
+    ExecutorRelatorio ..> PassoRelatorio : le em runtime
+    ExecutorRelatorio ..> RelatorioConfig : le em runtime
+    PassoRelatorio ..> RelatorioPDF : anota metodos
+    RelatorioConfig ..> RelatorioPDF : anota classe
+    RelatorioConfig ..> RelatorioHTML : anota classe
+    RelatorioConfig ..> RelatorioCSV : anota classe
+</div>
+    <div class="diagram-caption">Figura 3 — Versão 3: anotações próprias + ExecutorRelatorio com reflexão</div>
+  </div>
+
+  <h2>6.4 Diagrama de Sequência — Reflexão em Ação</h2>
+  <div class="diagram-section">
+<div class="mermaid">
+sequenceDiagram
+    participant Main
+    participant Executor as ExecutorRelatorio
+    participant Reflect as Java Reflection API
+    participant PDF as RelatorioPDF
+
+    Main->>Executor: executar(relatorioPDF)
+    activate Executor
+    Executor->>Reflect: getAnnotation(RelatorioConfig)
+    Reflect-->>Executor: nome=PDF extensao=pdf versao=2.1
+    Executor->>Reflect: descobrirPassos(RelatorioPDF.class)
+    activate Reflect
+    Reflect->>Reflect: filtra isAnnotationPresent(PassoRelatorio)
+    Reflect-->>Executor: lista ordenada de metodos
+    deactivate Reflect
+    Executor->>Executor: ordena por PassoRelatorio.ordem
+    Note over Executor,PDF: Loop - invoca cada metodo via reflexao
+    Executor->>Reflect: metodo.invoke(relatorioPDF)
+    Reflect->>PDF: executa metodo concreto
+    PDF-->>Executor: resultado
+    deactivate Executor
+</div>
+    <div class="diagram-caption">Figura 4 — Sequência: ExecutorRelatorio invoca passos via reflexão</div>
+  </div>
+</div>
+
+<!-- ========== 7. REFLEXÃO E ANOTAÇÕES ========== -->
+<div class="page">
+  <h1>7. Uso de Reflexão e Anotações</h1>
+
+  <h2>7.1 Motivação</h2>
+  <p>
+    Embora o Template Method da Versão 2 resolva o problema de duplicação, o método template ainda está <strong>acoplado aos nomes dos métodos</strong> em tempo de compilação. A Versão 3 elimina esse acoplamento usando <strong>anotações Java próprias</strong> e a <strong>API de reflexão</strong> para descobrir e invocar os passos dinamicamente.
+  </p>
+
+  <h2>7.2 Anotações Criadas</h2>
+  <h3>@PassoRelatorio</h3>
+  <p>Marca um método como sendo um passo do algoritmo e define sua ordem de execução:</p>
+<pre>@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface PassoRelatorio {
+    int ordem();                               // posição no algoritmo
+    String descricao() default "Passo";        // descrição legível
+    boolean obrigatorio() default true;        // true = obrigatório / false = hook
+}</pre>
+
+  <h3>@RelatorioConfig</h3>
+  <p>Anota a classe com metadados do formato de relatório:</p>
+<pre>@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface RelatorioConfig {
+    String nome();
+    String extensao();
+    String versao() default "1.0";
+    String descricao() default "";
+}</pre>
+
+  <h2>7.3 Como a Reflexão é Utilizada</h2>
+  <p>O <code>ExecutorRelatorio</code> realiza os seguintes passos em tempo de execução:</p>
+<pre>public void executar(RelatorioGerador gerador) {
+    Class&lt;?&gt; classe = gerador.getClass();
+
+    // 1. Lê metadados da classe via @RelatorioConfig
+    RelatorioConfig config = classe.getAnnotation(RelatorioConfig.class);
+
+    // 2. Descobre métodos anotados com @PassoRelatorio
+    List&lt;Method&gt; passos = descobrirPassos(classe);
+
+    // 3. Ordena pelos campos 'ordem'
+    passos.sort(Comparator.comparingInt(
+        m -> m.getAnnotation(PassoRelatorio.class).ordem()
+    ));
+
+    // 4. Invoca dinamicamente — sem conhecer os nomes!
+    for (Method metodo : passos) {
+        metodo.setAccessible(true);
+        metodo.invoke(gerador);
+    }
+}</pre>
+
+  <h2>7.4 Como isso Reduz o Acoplamento</h2>
+  <table>
+    <thead>
+      <tr><th>Aspecto</th><th>Versão 2 (Template Method)</th><th>Versão 3 (Reflexão + Anotações)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Executor conhece nomes dos métodos?</td><td>Sim — chamadas diretas</td><td>Não — descobre via <code>@PassoRelatorio</code></td></tr>
+      <tr><td>Acoplamento executor ↔ subclasses</td><td>Médio (polimorfismo)</td><td>Mínimo (apenas às anotações)</td></tr>
+      <tr><td>Adicionar novo formato</td><td>Criar subclasse</td><td>Criar classe com <code>@RelatorioConfig</code></td></tr>
+      <tr><td>Adicionar novo passo</td><td>Editar superclasse</td><td>Anotar método com <code>@PassoRelatorio</code></td></tr>
+      <tr><td>Metadados do formato</td><td>Espalhados em métodos</td><td>Declarados em <code>@RelatorioConfig</code></td></tr>
+    </tbody>
+  </table>
+  <p>
+    As anotações atuam como <strong>contratos declarativos</strong>: o executor descobre o que precisa fazer lendo metadados em tempo de execução, sem nenhum acoplamento estático às implementações concretas. Para adicionar um formato <code>RelatorioXML</code>, basta criar a classe com as anotações — o <code>ExecutorRelatorio</code> não precisa ser alterado.
+  </p>
+</div>
+
+<!-- ========== 8. INSTRUÇÕES ========== -->
+<div class="page">
+  <h1>8. Instruções para Executar o Projeto</h1>
+
+  <h2>8.1 Pré-requisito</h2>
+  <p>Ter o <strong>JDK 11 ou superior</strong> instalado. Verificar com:</p>
+<pre>java -version</pre>
+
+  <h2>8.2 Estrutura de Pastas</h2>
+<pre>TRABALHO POOA/
+├── executar_tudo.bat                   ← script automático (Windows)
+├── versao1_sem_gof/src/
+│   ├── RelatorioPDF.java
+│   ├── RelatorioHTML.java
+│   ├── RelatorioCSV.java
+│   └── Main.java
+├── versao2_com_template/src/
+│   ├── RelatorioGerador.java           ← classe abstrata com o Template Method
+│   ├── RelatorioPDF.java
+│   ├── RelatorioHTML.java
+│   ├── RelatorioCSV.java
+│   └── Main.java
+├── versao3_com_anotacoes/src/
+│   ├── anotacoes/
+│   │   ├── PassoRelatorio.java         ← anotação de passo
+│   │   └── RelatorioConfig.java        ← anotação de metadados
+│   ├── RelatorioGerador.java
+│   ├── RelatorioPDF.java
+│   ├── RelatorioHTML.java
+│   ├── RelatorioCSV.java
+│   ├── ExecutorRelatorio.java          ← motor com reflexão
+│   └── Main.java
+└── docs/
+    ├── diagrama_uml.html               ← diagramas UML interativos
+    └── documentacao.html               ← este documento</pre>
+
+  <h2>8.3 Opção 1 — Script Automático (Windows)</h2>
+  <p>Dar duplo clique no arquivo <code>executar_tudo.bat</code> na pasta raiz do projeto. O script compila e executa as três versões em sequência.</p>
+
+  <h2>8.4 Opção 2 — Compilação Manual</h2>
+  <h3>Versão 1 — Sem GoF</h3>
+<pre>cd versao1_sem_gof\src
+javac *.java
+java Main</pre>
+
+  <h3>Versão 2 — Template Method</h3>
+<pre>cd versao2_com_template\src
+javac *.java
+java Main</pre>
+
+  <h3>Versão 3 — Reflexão e Anotações</h3>
+<pre>cd versao3_com_anotacoes\src
+javac -d . anotacoes\PassoRelatorio.java anotacoes\RelatorioConfig.java
+javac -d . RelatorioGerador.java RelatorioPDF.java RelatorioHTML.java RelatorioCSV.java ExecutorRelatorio.java Main.java
+java Main</pre>
+
+  <h2>8.5 Visualizar os Diagramas UML</h2>
+  <p>Abrir o arquivo <code>docs/diagrama_uml.html</code> em qualquer navegador moderno (Chrome, Firefox, Edge). Os diagramas são renderizados automaticamente com Mermaid.js.</p>
+
+  <div class="info-box" style="margin-top:24px">
+    <strong>Referências Bibliográficas</strong>
+    <ul style="margin-top:8px">
+      <li>GAMMA, E. et al. <em>Design Patterns: Elements of Reusable Object-Oriented Software</em>. Addison-Wesley, 1994.</li>
+      <li>FREEMAN, E.; ROBSON, E. <em>Head First Design Patterns</em>. 2. ed. O'Reilly, 2021.</li>
+      <li>BLOCH, J. <em>Effective Java</em>. 3. ed. Addison-Wesley, 2018.</li>
+      <li>Oracle. <em>The Reflection API</em>. Disponível em: docs.oracle.com/javase/tutorial/reflect</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'default',
+  themeVariables: {
+    primaryColor: '#e8e8f0',
+    primaryTextColor: '#000',
+    primaryBorderColor: '#333',
+    lineColor: '#333',
+    fontFamily: 'Arial, sans-serif',
+    fontSize: '12px'
+  }
+});
+</script>
+</body>
+</html>

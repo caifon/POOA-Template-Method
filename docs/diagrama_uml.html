@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Template Method — Diagrama UML | POOA UCSal</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+:root {
+  --bg: #0d1117;
+  --bg2: #161b22;
+  --bg3: #21262d;
+  --border: #30363d;
+  --accent: #7c3aed;
+  --accent2: #a78bfa;
+  --green: #22c55e;
+  --red: #ef4444;
+  --yellow: #f59e0b;
+  --blue: #3b82f6;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --text3: #c9d1d9;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+header {
+  background: linear-gradient(135deg, #1e0a3c 0%, #0d1117 50%, #0a1628 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 2.5rem 3rem;
+}
+.header-badge {
+  display: inline-flex; align-items: center; gap: 0.5rem;
+  background: rgba(124,58,237,0.2); border: 1px solid rgba(124,58,237,0.4);
+  border-radius: 2rem; padding: 0.3rem 1rem;
+  font-size: 0.75rem; font-weight: 600; color: var(--accent2);
+  letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem;
+}
+header h1 {
+  font-size: 2rem; font-weight: 700;
+  background: linear-gradient(135deg, #fff 0%, var(--accent2) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; margin-bottom: 0.5rem;
+}
+header p { color: var(--text2); font-size: 0.95rem; }
+.header-meta { display: flex; gap: 1.5rem; margin-top: 1.2rem; flex-wrap: wrap; }
+.meta-chip { display: flex; align-items: center; gap: 0.4rem; font-size: 0.8rem; color: var(--text2); }
+.meta-chip span { color: var(--text3); font-weight: 500; }
+.tabs {
+  display: flex; background: var(--bg2);
+  border-bottom: 1px solid var(--border); padding: 0 2rem; overflow-x: auto;
+}
+.tab {
+  padding: 1rem 1.5rem; font-size: 0.875rem; font-weight: 500;
+  color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent;
+  white-space: nowrap; transition: all 0.2s; user-select: none;
+}
+.tab:hover { color: var(--text3); }
+.tab.active { color: var(--accent2); border-bottom-color: var(--accent); }
+main { padding: 2rem 3rem; max-width: 1400px; margin: 0 auto; position: relative; }
+.section {
+  position: absolute; top: 0; left: 3rem; right: 3rem;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s ease;
+}
+.section.active {
+  position: relative; left: auto; right: auto;
+  opacity: 1; pointer-events: all;
+}
+.section-header { margin-bottom: 2rem; }
+.section-header h2 { font-size: 1.5rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; }
+.section-header p { color: var(--text2); font-size: 0.9rem; line-height: 1.6; }
+.diagram-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; overflow: hidden; margin-bottom: 2rem;
+}
+.diagram-card-header {
+  padding: 1rem 1.5rem; background: var(--bg3);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.diagram-card-header h3 {
+  font-size: 0.9rem; font-weight: 600; color: var(--text3);
+  display: flex; align-items: center; gap: 0.5rem;
+}
+.tag { font-size: 0.7rem; padding: 0.2rem 0.6rem; border-radius: 4px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.tag-pattern { background: rgba(34,197,94,0.15); color: var(--green); }
+.tag-annotation { background: rgba(245,158,11,0.15); color: var(--yellow); }
+.tag-sequence { background: rgba(59,130,246,0.15); color: var(--blue); }
+.diagram-body { padding: 2rem; overflow-x: auto; }
+.mermaid { display: flex; justify-content: center; }
+.legend {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 1.2rem 1.5rem; margin-top: 1rem;
+}
+.legend h4 { font-size: 0.8rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.8rem; }
+.legend-items { display: flex; flex-wrap: wrap; gap: 1rem; }
+.legend-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8rem; color: var(--text2); }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+.callout { border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; display: flex; gap: 0.75rem; align-items: flex-start; font-size: 0.875rem; line-height: 1.6; }
+.callout-info { background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.25); color: #93c5fd; }
+.callout-tip { background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.25); color: #86efac; }
+.callout-warn { background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.25); color: #fcd34d; }
+.callout-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+.comp-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.comp-table th { padding: 0.9rem 1.2rem; background: var(--bg3); color: var(--text2); font-weight: 600; text-align: center; border-bottom: 1px solid var(--border); }
+.comp-table th:first-child { text-align: left; }
+.comp-table td { padding: 0.75rem 1.2rem; border-bottom: 1px solid rgba(255,255,255,0.04); text-align: center; color: var(--text2); }
+.comp-table td:first-child { text-align: left; color: var(--text3); }
+.comp-table tr:hover td { background: rgba(255,255,255,0.02); }
+.ok { color: var(--green); }
+.nok { color: var(--red); }
+.mid { color: var(--yellow); }
+footer { text-align: center; padding: 2rem; color: var(--text2); font-size: 0.8rem; border-top: 1px solid var(--border); margin-top: 3rem; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="header-badge">🎓 POOA — UCSal 2026.1</div>
+  <h1>📐 Diagramas UML — Template Method</h1>
+  <p>Visualização dos diagramas de classe e sequência do sistema de geração de relatórios.</p>
+  <div class="header-meta">
+    <div class="meta-chip">👥 <span>Caio Roldão · João Mário · Juvenal Junior</span></div>
+    <div class="meta-chip">🏷️ Padrão: <span>Template Method (GoF Comportamental)</span></div>
+    <div class="meta-chip">📅 <span>04/06/2026</span></div>
+  </div>
+</header>
+
+<div class="tabs">
+  <div class="tab active" onclick="showTab('v1')" id="tab-v1">❌ Versão 1 — Sem GoF</div>
+  <div class="tab" onclick="showTab('v2')" id="tab-v2">📊 Versão 2 — Template Method</div>
+  <div class="tab" onclick="showTab('v3')" id="tab-v3">🔬 Versão 3 — Reflexão + Anotações</div>
+  <div class="tab" onclick="showTab('seq')" id="tab-seq">⏱️ Diagrama de Sequência</div>
+  <div class="tab" onclick="showTab('compare')" id="tab-compare">⚖️ Comparativo</div>
+</div>
+
+<main id="main-content">
+
+<!-- ==================== VERSÃO 1 ==================== -->
+<div id="section-v1" class="section active">
+  <div class="section-header">
+    <h2>Diagrama de Classes — Versão 1 (Sem Padrão GoF)</h2>
+    <p>Três classes independentes, cada uma com seu próprio método <code>gerar()</code>. Os passos de coleta, processamento e exportação estão <strong>duplicados</strong> nas três classes.</p>
+  </div>
+  <div class="callout callout-warn">
+    <span class="callout-icon">⚠️</span>
+    <div><strong>Problema:</strong> Não há herança nem reutilização de código. Os passos 1 (coletarDados), 2 (processarDados) e 6 (exportar) são idênticos nas três classes. Qualquer mudança no fluxo exige editar <strong>3 arquivos</strong> separados.</div>
+  </div>
+  <div class="diagram-card">
+    <div class="diagram-card-header">
+      <h3>🏗️ Diagrama de Classes — Versão 1 <span class="tag tag-annotation">Sem GoF</span></h3>
+    </div>
+    <div class="diagram-body">
+<div class="mermaid">
+classDiagram
+    class RelatorioPDF {
+        -titulo String
+        -dados String
+        +RelatorioPDF(titulo, dados)
+        +gerar() void
+        -coletarDados() void
+        -processarDados() void
+        -formatarCabecalhoPDF() void
+        -formatarCorpoPDF() void
+        -formatarRodapePDF() void
+        -exportar() void
+    }
+    class RelatorioHTML {
+        -titulo String
+        -dados String
+        +RelatorioHTML(titulo, dados)
+        +gerar() void
+        -coletarDados() void
+        -processarDados() void
+        -formatarCabecalhoHTML() void
+        -formatarCorpoHTML() void
+        -formatarRodapeHTML() void
+        -exportar() void
+    }
+    class RelatorioCSV {
+        -titulo String
+        -dados String
+        +RelatorioCSV(titulo, dados)
+        +gerar() void
+        -coletarDados() void
+        -processarDados() void
+        -formatarCabecalhoCSV() void
+        -formatarCorpoCSV() void
+        -formatarRodapeCSV() void
+        -exportar() void
+    }
+</div>
+    </div>
+  </div>
+  <div class="legend">
+    <h4>Problemas Identificados</h4>
+    <div class="legend-items">
+      <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> <code>coletarDados()</code> duplicado nas 3 classes</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> <code>processarDados()</code> duplicado nas 3 classes</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div> <code>exportar()</code> duplicado nas 3 classes</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> Sem herança — classes totalmente independentes</div>
+    </div>
+  </div>
+  <div class="callout callout-info" style="margin-top:1.5rem">
+    <span class="callout-icon">ℹ️</span>
+    <div><strong>Violações:</strong> <strong>DRY</strong> (Don't Repeat Yourself) — código duplicado em 3 lugares. <strong>OCP</strong> (Open/Closed Principle) — adicionar um novo passo exige abrir e editar 3 arquivos diferentes, com risco de inconsistência.</div>
+  </div>
+</div>
+
+<!-- ==================== VERSÃO 2 ==================== -->
+<div id="section-v2" class="section">
+  <div class="section-header">
+    <h2>Diagrama de Classes — Versão 2 (Template Method Clássico)</h2>
+    <p>A classe abstrata <code>RelatorioGerador</code> define o esqueleto do algoritmo. As subclasses implementam apenas os passos variáveis.</p>
+  </div>
+  <div class="callout callout-info">
+    <span class="callout-icon">ℹ️</span>
+    <div><strong>Template Method:</strong> <code>gerarRelatorio()</code> é <strong>final</strong> — nenhuma subclasse altera a ordem dos passos. Os métodos abstract são obrigatórios. <code>incluirMarcaDagua()</code> é um <strong>hook</strong> — opcional.</div>
+  </div>
+  <div class="diagram-card">
+    <div class="diagram-card-header">
+      <h3>🏗️ Diagrama de Classes — Versão 2 <span class="tag tag-pattern">Template Method</span></h3>
+    </div>
+    <div class="diagram-body">
+<div class="mermaid">
+classDiagram
+    class RelatorioGerador {
+        &lt;&lt;abstract&gt;&gt;
+        +titulo String
+        +dados String
+        +gerarRelatorio() void
+        +coletarDados() void
+        +processarDados() void
+        +exportar() void
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +incluirMarcaDagua() void
+        +getFormato() String
+    }
+    class RelatorioPDF {
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +incluirMarcaDagua() void
+        +getFormato() String
+    }
+    class RelatorioHTML {
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +getFormato() String
+    }
+    class RelatorioCSV {
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +getFormato() String
+    }
+    RelatorioGerador <|-- RelatorioPDF : extends
+    RelatorioGerador <|-- RelatorioHTML : extends
+    RelatorioGerador <|-- RelatorioCSV : extends
+</div>
+    </div>
+  </div>
+  <div class="legend">
+    <h4>Legenda dos Métodos</h4>
+    <div class="legend-items">
+      <div class="legend-item"><div class="legend-dot" style="background:#7c3aed"></div> <code>final</code> — não pode ser sobrescrito (template)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f59e0b"></div> abstract — subclasse deve implementar</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#22c55e"></div> hook — implementação padrão, sobrescrita opcional</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div> <code>private</code> — passo fixo interno</div>
+    </div>
+  </div>
+  <div class="callout callout-tip" style="margin-top:1.5rem">
+    <span class="callout-icon">💡</span>
+    <div><strong>Hook em ação:</strong> Apenas <code>RelatorioPDF</code> sobrescreve <code>incluirMarcaDagua()</code> para adicionar "CONFIDENCIAL". <code>RelatorioHTML</code> e <code>RelatorioCSV</code> herdam a implementação vazia.</div>
+  </div>
+</div>
+
+<!-- ==================== VERSÃO 3 ==================== -->
+<div id="section-v3" class="section">
+  <div class="section-header">
+    <h2>Diagrama de Classes — Versão 3 (Reflexão + Anotações)</h2>
+    <p>As anotações <code>@PassoRelatorio</code> e <code>@RelatorioConfig</code> desacoplam o executor das implementações concretas.</p>
+  </div>
+  <div class="callout callout-warn">
+    <span class="callout-icon">⚡</span>
+    <div><strong>Diferença-chave:</strong> <code>ExecutorRelatorio</code> não conhece <code>RelatorioPDF</code>, <code>RelatorioHTML</code> nem <code>RelatorioCSV</code> em tempo de compilação. Ele descobre e executa os passos via <strong>reflexão Java</strong> lendo as anotações em runtime.</div>
+  </div>
+  <div class="diagram-card">
+    <div class="diagram-card-header">
+      <h3>🔬 Anotações Criadas <span class="tag tag-annotation">@Annotations</span></h3>
+    </div>
+    <div class="diagram-body">
+<div class="mermaid">
+classDiagram
+    class PassoRelatorio {
+        &lt;&lt;annotation&gt;&gt;
+        +ordem int
+        +descricao String
+        +obrigatorio boolean
+    }
+    class RelatorioConfig {
+        &lt;&lt;annotation&gt;&gt;
+        +nome String
+        +extensao String
+        +versao String
+        +descricao String
+    }
+</div>
+    </div>
+  </div>
+  <div class="diagram-card">
+    <div class="diagram-card-header">
+      <h3>🏗️ Diagrama de Classes — Versão 3 <span class="tag tag-annotation">Reflexão</span></h3>
+    </div>
+    <div class="diagram-body">
+<div class="mermaid">
+classDiagram
+    class RelatorioGerador {
+        &lt;&lt;abstract&gt;&gt;
+        +titulo String
+        +dados String
+        +coletarDados() void
+        +processarDados() void
+        +exportar() void
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +incluirMarcaDagua() void
+        +getFormato() String
+    }
+    class RelatorioPDF {
+        &lt;&lt;anotado&gt;&gt;
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +incluirMarcaDagua() void
+        +getFormato() String
+    }
+    class RelatorioHTML {
+        &lt;&lt;anotado&gt;&gt;
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +getFormato() String
+    }
+    class RelatorioCSV {
+        &lt;&lt;anotado&gt;&gt;
+        +formatarCabecalho() void
+        +formatarCorpo() void
+        +formatarRodape() void
+        +getFormato() String
+    }
+    class ExecutorRelatorio {
+        +executar(gerador) void
+        -descobrirPassos(classe) List
+        -exibirMetadados(classe) void
+    }
+    RelatorioGerador <|-- RelatorioPDF : extends
+    RelatorioGerador <|-- RelatorioHTML : extends
+    RelatorioGerador <|-- RelatorioCSV : extends
+    ExecutorRelatorio ..> RelatorioGerador : usa reflexao
+    ExecutorRelatorio ..> PassoRelatorio : le em runtime
+    ExecutorRelatorio ..> RelatorioConfig : le em runtime
+    PassoRelatorio ..> RelatorioPDF : anota metodos
+    RelatorioConfig ..> RelatorioPDF : anota classe
+    RelatorioConfig ..> RelatorioHTML : anota classe
+    RelatorioConfig ..> RelatorioCSV : anota classe
+</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== SEQUÊNCIA ==================== -->
+<div id="section-seq" class="section">
+  <div class="section-header">
+    <h2>Diagrama de Sequência — Versão 3 (Reflexão em ação)</h2>
+    <p>Mostra o que acontece quando <code>ExecutorRelatorio.executar(relatorioPDF)</code> é chamado — a reflexão descobrindo e invocando os passos.</p>
+  </div>
+  <div class="diagram-card">
+    <div class="diagram-card-header">
+      <h3>⏱️ Sequência de Execução com Reflexão <span class="tag tag-sequence">Runtime</span></h3>
+    </div>
+    <div class="diagram-body">
+<div class="mermaid">
+sequenceDiagram
+    participant Main
+    participant Executor as ExecutorRelatorio
+    participant Reflect as Java Reflection API
+    participant PDF as RelatorioPDF
+
+    Main->>Executor: executar(relatorioPDF)
+    activate Executor
+
+    Executor->>Reflect: getAnnotation(RelatorioConfig)
+    Reflect-->>Executor: nome=PDF extensao=pdf versao=2.1
+    Executor->>Executor: exibirMetadados()
+
+    Executor->>Reflect: descobrirPassos(RelatorioPDF.class)
+    activate Reflect
+    Reflect->>Reflect: percorre RelatorioPDF e RelatorioGerador
+    Reflect->>Reflect: filtra isAnnotationPresent(PassoRelatorio)
+    Reflect-->>Executor: lista de metodos ordenados por ordem
+    deactivate Reflect
+
+    Executor->>Executor: ordena por PassoRelatorio.ordem
+
+    Note over Executor,PDF: Loop - invoca cada metodo via reflexao
+
+    Executor->>Reflect: metodo ordem=1 invoke
+    Reflect->>PDF: coletarDados()
+    PDF-->>Executor: dados coletados
+
+    Executor->>Reflect: metodo ordem=2 invoke
+    Reflect->>PDF: processarDados()
+    PDF-->>Executor: dados processados
+
+    Executor->>Reflect: metodo ordem=3 invoke
+    Reflect->>PDF: formatarCabecalho()
+    PDF-->>Executor: cabecalho PDF
+
+    Executor->>Reflect: metodo ordem=4 invoke
+    Reflect->>PDF: formatarCorpo()
+    PDF-->>Executor: corpo PDF
+
+    Executor->>Reflect: metodo ordem=5 invoke
+    Reflect->>PDF: incluirMarcaDagua()
+    PDF-->>Executor: CONFIDENCIAL
+
+    Executor->>Reflect: metodo ordem=6 invoke
+    Reflect->>PDF: formatarRodape()
+    PDF-->>Executor: rodape PDF
+
+    Executor->>Reflect: metodo ordem=7 invoke
+    Reflect->>PDF: exportar()
+    PDF-->>Executor: arquivo exportado
+
+    deactivate Executor
+</div>
+    </div>
+  </div>
+  <div class="callout callout-tip">
+    <span class="callout-icon">💡</span>
+    <div><strong>Ponto-chave:</strong> A seta <strong>Executor → Reflect → PDF</strong> mostra que o Executor nunca chama PDF diretamente. A API de reflexão localiza e invoca o método concreto, eliminando o acoplamento em tempo de compilação.</div>
+  </div>
+</div>
+
+<!-- ==================== COMPARATIVO ==================== -->
+<div id="section-compare" class="section">
+  <div class="section-header">
+    <h2>Comparativo entre as Três Versões</h2>
+    <p>Evolução progressiva do design: de código duplicado até desacoplamento máximo via reflexão.</p>
+  </div>
+  <div class="diagram-card">
+    <div class="diagram-card-header">
+      <h3>⚖️ Evolução Arquitetural — Versão 1 → 2 → 3</h3>
+    </div>
+    <div class="diagram-body">
+<div class="mermaid">
+flowchart LR
+    subgraph V1["Versao 1 - Sem GoF"]
+        direction TB
+        PDF1["RelatorioPDF\ngerar()"]
+        HTML1["RelatorioHTML\ngerar()"]
+        CSV1["RelatorioCSV\ngerar()"]
+    end
+
+    subgraph V2["Versao 2 - Template Method"]
+        direction TB
+        ABS["RelatorioGerador\ngerarRelatorio FINAL"]
+        PDF2["RelatorioPDF"]
+        HTML2["RelatorioHTML"]
+        CSV2["RelatorioCSV"]
+        ABS --> PDF2
+        ABS --> HTML2
+        ABS --> CSV2
+    end
+
+    subgraph V3["Versao 3 - Reflexao e Anotacoes"]
+        direction TB
+        EXEC["ExecutorRelatorio\nexecutar()"]
+        PDF3["RelatorioPDF"]
+        HTML3["RelatorioHTML"]
+        CSV3["RelatorioCSV"]
+        EXEC -.->|reflexao| PDF3
+        EXEC -.->|reflexao| HTML3
+        EXEC -.->|reflexao| CSV3
+    end
+
+    V1 -->|Refatoracao c Template Method| V2
+    V2 -->|Evolucao c Reflexao| V3
+</div>
+    </div>
+  </div>
+  <div class="diagram-card" style="margin-top:1.5rem">
+    <div class="diagram-card-header">
+      <h3>📊 Tabela Comparativa de Características</h3>
+    </div>
+    <div class="diagram-body" style="padding:0">
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th>Característica</th>
+            <th style="color:var(--red)">❌ Versão 1</th>
+            <th style="color:var(--green)">✅ Versão 2</th>
+            <th style="color:var(--accent2)">🚀 Versão 3</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Código duplicado</td><td class="nok">Sim (3 cópias)</td><td class="ok">Não</td><td class="ok">Não</td></tr>
+          <tr><td>Fluxo garantido (invariante)</td><td class="nok">Não</td><td class="ok">Sim (final)</td><td class="ok">Sim (por ordem)</td></tr>
+          <tr><td>Adicionar novo formato</td><td class="mid">Nova classe (todo fluxo)</td><td class="ok">Nova subclasse</td><td class="ok">Nova classe + @</td></tr>
+          <tr><td>Adicionar novo passo</td><td class="nok">3 arquivos</td><td class="ok">1 arquivo</td><td class="ok">1 método + @</td></tr>
+          <tr><td>Executor conhece subclasses?</td><td class="nok">Sim (direto)</td><td class="mid">Polimorfismo</td><td class="ok">Não (reflexão)</td></tr>
+          <tr><td>Anotações próprias</td><td class="nok">Não</td><td class="nok">Não</td><td class="ok">@PassoRelatorio @RelatorioConfig</td></tr>
+          <tr><td>Princípio OCP respeitado</td><td class="nok">Violado</td><td class="ok">Respeitado</td><td class="ok">Máximo</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<footer>
+  Trabalho AVII — POOA · UCSal 2026.1 · Template Method GoF · Caio Roldão · João Mário · Juvenal Junior
+</footer>
+
+<script>
+mermaid.initialize({
+  startOnLoad: true,
+  theme: 'dark',
+  themeVariables: {
+    darkMode: true,
+    background: '#161b22',
+    primaryColor: '#7c3aed',
+    primaryTextColor: '#e6edf3',
+    primaryBorderColor: '#30363d',
+    lineColor: '#8b949e',
+    secondaryColor: '#21262d',
+    tertiaryColor: '#0d1117',
+    fontFamily: 'Inter, sans-serif'
+  }
+});
+
+function showTab(name) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('section-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
